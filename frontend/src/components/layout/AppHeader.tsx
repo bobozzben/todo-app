@@ -1,5 +1,3 @@
-import React from 'react'
-
 interface AppHeaderProps {
   currentPage: 'tasks' | 'users'
   userName: string | undefined

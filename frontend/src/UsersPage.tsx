@@ -1,4 +1,3 @@
-import React from 'react'
 import UserTable from './components/users/UserTable'
 import { useUsers } from './hooks/useUsers'
 

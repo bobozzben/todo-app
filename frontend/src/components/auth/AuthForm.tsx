@@ -1,5 +1,3 @@
-import React from 'react'
-
 interface AuthFormProps {
   isRegister: boolean
   email: string

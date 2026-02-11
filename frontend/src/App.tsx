@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import AuthPage from './AuthPage'
 import UsersPage from './UsersPage'
 import TasksPage from './TasksPage'

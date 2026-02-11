@@ -1,5 +1,3 @@
-import React from 'react'
-
 interface Task {
   id: number
   title: string

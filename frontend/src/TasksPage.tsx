@@ -1,4 +1,3 @@
-import React from 'react'
 import TaskList from './components/tasks/TaskList'
 import { useTasks } from './hooks/useTasks'
 
