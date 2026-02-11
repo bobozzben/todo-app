@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from './axios'
 
 // 获取用户列表
 export const fetchUsers = (page: number = 1, limit: number = 10, search: string = '') => {

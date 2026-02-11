@@ -110,8 +110,10 @@ export function useUsers() {
       document.body.appendChild(link)
       link.click()
       link.parentElement?.removeChild(link)
-    } catch (err) {
-      alert('Export PDF failed')
+    } catch (err: any) {
+      console.error('PDF export error:', err)
+      const errMsg = err.response?.data?.error || err.message || 'Export PDF failed'
+      alert(`Export PDF failed: ${errMsg}`)
     }
   }
 

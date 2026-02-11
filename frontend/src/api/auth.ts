@@ -1,4 +1,4 @@
-import axios from './axios';
+import axiosInstance from './axios';
 
 export interface AuthResponse {
   token: string;
@@ -6,27 +6,29 @@ export interface AuthResponse {
 }
 
 export function register(email: string, name: string, password: string) {
-  return axios.post<AuthResponse>('/auth/register', { email, name, password });
+  return axiosInstance.post<AuthResponse>('/auth/register', { email, name, password });
 }
 
 export function login(email: string, password: string) {
-  return axios.post<AuthResponse>('/auth/login', { email, password });
+  return axiosInstance.post<AuthResponse>('/auth/login', { email, password });
 }
 
 export function getCurrentUser() {
-  return axios.get('/auth/me');
+  return axiosInstance.get('/auth/me');
 }
 
 export function updateUser(data: { name?: string; password?: string }) {
-  return axios.put('/auth/me', data);
+  return axiosInstance.put('/auth/me', data);
 }
 
 export function setAuthToken(token: string | null) {
   if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    // 更新自定义axios实例的headers
+    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    // 也保存到localStorage供拦截器使用
     localStorage.setItem('token', token);
   } else {
-    delete axios.defaults.headers.common['Authorization'];
+    delete axiosInstance.defaults.headers.common['Authorization'];
     localStorage.removeItem('token');
   }
 }

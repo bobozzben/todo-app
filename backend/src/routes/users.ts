@@ -297,8 +297,8 @@ router.get('/export/pdf', async (req: Request, res: Response) => {
     const pageHeight = 792
     const footerPosition = 50
 
-    // 标题
-    page.drawText('用户列表报表', {
+    // Title
+    page.drawText('User List Report', {
       x: margin,
       y: yPosition,
       size: 16,
@@ -306,25 +306,25 @@ router.get('/export/pdf', async (req: Request, res: Response) => {
     })
     yPosition -= 30
 
-    // 生成日期
-    page.drawText(`生成日期: ${new Date().toLocaleDateString('zh-CN')}`, {
+    // Generated Date
+    page.drawText(`Generated: ${new Date().toLocaleDateString('en-US')}`, {
       x: margin,
       y: yPosition,
       size: 9,
-      color: rgb(100, 100, 100),
+      color: rgb(0.39, 0.39, 0.39),
     })
     yPosition -= 20
 
-    // 表头
+    // Table Headers
     const headers = ['ID', 'Email', 'Name', 'Phone', 'Company', 'Position']
     const colWidths = [40, 100, 80, 80, 100, 80]
     let xPosition = margin
 
-    page.drawText('─'.repeat(80), {
+    page.drawText('='.repeat(80), {
       x: margin,
       y: yPosition,
       size: 8,
-      color: rgb(150, 150, 150),
+      color: rgb(0.59, 0.59, 0.59),
     })
     yPosition -= lineHeight
 
@@ -339,15 +339,15 @@ router.get('/export/pdf', async (req: Request, res: Response) => {
     }
     yPosition -= lineHeight
 
-    page.drawText('─'.repeat(80), {
+    page.drawText('='.repeat(80), {
       x: margin,
       y: yPosition,
       size: 8,
-      color: rgb(150, 150, 150),
+      color: rgb(0.59, 0.59, 0.59),
     })
     yPosition -= lineHeight
 
-    // 数据行
+    // Data rows
     for (const user of users) {
       if (yPosition < footerPosition + 20) {
         page = await pdfDoc.addPage([612, 792])
@@ -355,13 +355,14 @@ router.get('/export/pdf', async (req: Request, res: Response) => {
       }
 
       xPosition = margin
+      // Ensure all data is ASCII-compatible (no Chinese characters)
       const rowData = [
         String(user.id),
-        user.email,
-        user.name,
+        user.email || '',
+        (user.name || '').substring(0, 20),
         user.phone || '-',
-        user.company || '-',
-        user.position || '-',
+        (user.company || '').substring(0, 20),
+        (user.position || '').substring(0, 20),
       ]
 
       for (let i = 0; i < rowData.length; i++) {
@@ -370,21 +371,21 @@ router.get('/export/pdf', async (req: Request, res: Response) => {
           x: xPosition,
           y: yPosition,
           size: fontSize - 1,
-          color: rgb(50, 50, 50),
+          color: rgb(0.196, 0.196, 0.196),
         })
         xPosition += colWidths[i]
       }
       yPosition -= lineHeight
     }
 
-    // 页脚
+    // Footer
     const totalPages = pdfDoc.getPageCount()
     pdfDoc.getPages().forEach((p, index) => {
-      p.drawText(`第 ${index + 1} 页，共 ${totalPages} 页`, {
+      p.drawText(`Page ${index + 1} of ${totalPages}`, {
         x: margin,
         y: footerPosition,
         size: 8,
-        color: rgb(150, 150, 150),
+        color: rgb(0.59, 0.59, 0.59),
       })
     })
 

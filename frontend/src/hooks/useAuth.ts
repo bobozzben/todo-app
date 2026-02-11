@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { register, login, setAuthToken, getAuthToken, initAuthToken } from '../api/auth'
+import { register, login, getCurrentUser, setAuthToken, getAuthToken, initAuthToken } from '../api/auth'
 
 type User = {
   id: number
@@ -23,7 +23,7 @@ export function useAuth() {
 
   async function checkAuth() {
     try {
-      const res = await login('', '')
+      const res = await getCurrentUser()
       setUser(res.data)
       setAuthenticated(true)
     } catch (err) {
@@ -54,7 +54,10 @@ export function useAuth() {
     setLoading(true)
     try {
       const res = await login(email, password)
+      console.log('[useAuth] Login response:', res.data)
+      console.log('[useAuth] Setting token:', res.data.token.substring(0, 20) + '...')
       setAuthToken(res.data.token)
+      console.log('[useAuth] localStorage token:', localStorage.getItem('token')?.substring(0, 20) + '...')
       await checkAuth()
       return res.data
     } catch (err: any) {
