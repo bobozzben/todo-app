@@ -12,6 +12,11 @@ model User {
   email     String  @unique
   name      String
   password  String
+  phone     String?
+  address   String?
+  company   String?
+  position  String?
+  notes     String?
   tasks     Task[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

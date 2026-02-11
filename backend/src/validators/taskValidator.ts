@@ -22,3 +22,12 @@ export const updateUserSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters').optional(),
 });
 
+export const updateUserProfileSchema = z.object({
+  name: z.string().min(1, 'Name is required').optional(),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  company: z.string().optional(),
+  position: z.string().optional(),
+  notes: z.string().optional(),
+});
+

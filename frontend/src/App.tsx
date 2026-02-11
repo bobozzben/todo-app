@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from './api/axios'
 import { setAuthToken, getAuthToken, initAuthToken } from './api/auth'
 import AuthPage from './AuthPage'
+import UsersPage from './UsersPage'
 
 type Task = {
   id: number
@@ -25,6 +26,7 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [editingTitle, setEditingTitle] = useState('')
+  const [currentPage, setCurrentPage] = useState<'tasks' | 'users'>('tasks')
 
   useEffect(() => {
     initAuthToken()
@@ -129,10 +131,74 @@ export default function App() {
     }} />
   }
 
+  // 显示用户管理页面
+  if (currentPage === 'users') {
+    return (
+      <div>
+        {/* 顶部导航栏 */}
+        <div style={{
+          background: 'white',
+          padding: '16px 40px',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+          <div style={{ display: 'flex', gap: 20 }}>
+            <button
+              onClick={() => setCurrentPage('tasks')}
+              style={{
+                fontSize: '16px',
+                fontWeight: 600,
+                color: '#667eea',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              📋 待辦事項
+            </button>
+            <button
+              onClick={() => setCurrentPage('users')}
+              style={{
+                fontSize: '16px',
+                fontWeight: 600,
+                color: '#999',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              👥 用戶管理
+            </button>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <span style={{ color: '#666' }}>{user?.name}</span>
+            <button
+              onClick={handleLogout}
+              style={{
+                padding: '8px 16px',
+                background: '#f5f5f5',
+                border: '1px solid #e0e0e0',
+                borderRadius: '8px',
+                color: '#666',
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+            >
+              登出
+            </button>
+          </div>
+        </div>
+        <UsersPage />
+      </div>
+    )
+  }
+
   return (
     <div style={{ minHeight: '100vh', padding: '40px 20px' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
-        {/* Header with logout */}
+        {/* 顶部导航栏 */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -144,7 +210,35 @@ export default function App() {
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         }}>
           <div>
-            <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: 4, color: '#333' }}>待辦事項</h1>
+            <div style={{ display: 'flex', gap: 20, marginBottom: 12 }}>
+              <button
+                onClick={() => setCurrentPage('tasks')}
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: '#667eea',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                📋 待辦事項
+              </button>
+              <button
+                onClick={() => setCurrentPage('users')}
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: '#999',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                👥 用戶管理
+              </button>
+            </div>
+            <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: 4, color: '#333', margin: '0 0 4px 0' }}>待辦事項</h1>
             <p style={{ margin: 0, color: '#999', fontSize: '14px' }}>歡迎，{user?.name}</p>
           </div>
           <button
