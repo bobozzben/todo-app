@@ -1,12 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import {
-  fetchUsers,
-  updateUser,
-  deleteUser,
-  importUsers,
-  exportUsersExcel,
-  exportUsersPDF,
-} from './api/users'
+import React from 'react'
+import { useUsers } from './hooks/useUsers'
 
 type User = {
   id: number
@@ -21,105 +14,27 @@ type User = {
 }
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(false)
-  const [search, setSearch] = useState('')
-  const [page, setPage] = useState(1)
-  const [total, setTotal] = useState(0)
-  const [limit, setLimit] = useState(10)
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [editData, setEditData] = useState<Partial<User>>({})
-  const [showForm, setShowForm] = useState(false)
-
-  useEffect(() => {
-    loadUsers()
-  }, [page, search])
-
-  async function loadUsers() {
-    setLoading(true)
-    try {
-      const res = await fetchUsers(page, limit, search)
-      setUsers(res.data.data)
-      setTotal(res.data.total)
-    } catch (err) {
-      console.error(err)
-      alert('加载用户失败')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleUpdate(id: number) {
-    try {
-      await updateUser(id, editData)
-      setEditingId(null)
-      setEditData({})
-      loadUsers()
-      alert('更新成功')
-    } catch (err: any) {
-      alert('更新失败：' + err.response?.data?.error)
-    }
-  }
-
-  async function handleDelete(id: number) {
-    if (!confirm('确定要删除此用户吗？')) return
-    try {
-      await deleteUser(id)
-      loadUsers()
-      alert('删除成功')
-    } catch (err: any) {
-      alert('删除失败：' + err.response?.data?.error)
-    }
-  }
-
-  async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    try {
-      const res = await importUsers(file)
-      alert(`导入完成\n新增: ${res.data.imported}\n更新: ${res.data.updated}`)
-      loadUsers()
-    } catch (err: any) {
-      alert('导入失败：' + err.response?.data?.error)
-    }
-  }
-
-  async function handleExportExcel() {
-    try {
-      const res = await exportUsersExcel(search)
-      const url = window.URL.createObjectURL(new Blob([res.data]))
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', 'users_export.xlsx')
-      document.body.appendChild(link)
-      link.click()
-      link.parentElement?.removeChild(link)
-    } catch (err) {
-      alert('导出 Excel 失败')
-    }
-  }
-
-  async function handleExportPDF() {
-    try {
-      const res = await exportUsersPDF(search)
-      const url = window.URL.createObjectURL(new Blob([res.data]))
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', 'users_export.pdf')
-      document.body.appendChild(link)
-      link.click()
-      link.parentElement?.removeChild(link)
-    } catch (err) {
-      alert('导出 PDF 失败')
-    }
-  }
-
-  function handlePrint() {
-    window.print()
-  }
-
-  const pages = Math.ceil(total / limit)
+  const {
+    users,
+    loading,
+    search,
+    page,
+    total,
+    limit,
+    pages,
+    editingId,
+    editData,
+    handleUpdate,
+    handleDelete,
+    handleImport,
+    handleExportExcel,
+    handleExportPDF,
+    handleSearch,
+    handlePrint,
+    handlePagination,
+    setEditingId,
+    setEditData,
+  } = useUsers()
 
   return (
     <div
@@ -130,7 +45,6 @@ export default function UsersPage() {
       }}
     >
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        {/* 标题 */}
         <div style={{ marginBottom: 30 }}>
           <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: 'white', marginBottom: 8 }}>
             用户管理
@@ -138,7 +52,6 @@ export default function UsersPage() {
           <p style={{ color: 'rgba(255,255,255,0.8)' }}>共 {total} 个用户</p>
         </div>
 
-        {/* 搜索和操作栏 */}
         <div
           style={{
             background: 'white',
@@ -153,10 +66,7 @@ export default function UsersPage() {
               type="text"
               placeholder="搜索用户（姓名、邮箱、公司等）..."
               value={search}
-              onChange={e => {
-                setSearch(e.target.value)
-                setPage(1)
-              }}
+              onChange={(e) => handleSearch(e.target.value)}
               style={{
                 flex: 1,
                 minWidth: 250,
@@ -237,7 +147,6 @@ export default function UsersPage() {
           </div>
         </div>
 
-        {/* 用户表格 */}
         <div
           style={{
             background: 'white',
@@ -274,7 +183,7 @@ export default function UsersPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map((user, idx) => (
+                    {users.map((user: User, idx) => (
                       <tr
                         key={user.id}
                         style={{
@@ -287,8 +196,8 @@ export default function UsersPage() {
                         <td style={{ padding: '16px' }}>
                           {editingId === user.id ? (
                             <input
-                              value={editData.name || user.name}
-                              onChange={e => setEditData({ ...editData, name: e.target.value })}
+                              value={editData.name || ''}
+                              onChange={(e) => setEditData({ ...editData, name: e.target.value })}
                               style={{ width: '100%', padding: '8px', borderRadius: '4px' }}
                             />
                           ) : (
@@ -298,8 +207,8 @@ export default function UsersPage() {
                         <td style={{ padding: '16px' }}>
                           {editingId === user.id ? (
                             <input
-                              value={editData.phone || user.phone || ''}
-                              onChange={e => setEditData({ ...editData, phone: e.target.value })}
+                              value={editData.phone || ''}
+                              onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
                               style={{ width: '100%', padding: '8px', borderRadius: '4px' }}
                             />
                           ) : (
@@ -309,10 +218,8 @@ export default function UsersPage() {
                         <td style={{ padding: '16px' }}>
                           {editingId === user.id ? (
                             <input
-                              value={editData.company || user.company || ''}
-                              onChange={e =>
-                                setEditData({ ...editData, company: e.target.value })
-                              }
+                              value={editData.company || ''}
+                              onChange={(e) => setEditData({ ...editData, company: e.target.value })}
                               style={{ width: '100%', padding: '8px', borderRadius: '4px' }}
                             />
                           ) : (
@@ -322,10 +229,8 @@ export default function UsersPage() {
                         <td style={{ padding: '16px' }}>
                           {editingId === user.id ? (
                             <input
-                              value={editData.position || user.position || ''}
-                              onChange={e =>
-                                setEditData({ ...editData, position: e.target.value })
-                              }
+                              value={editData.position || ''}
+                              onChange={(e) => setEditData({ ...editData, position: e.target.value })}
                               style={{ width: '100%', padding: '8px', borderRadius: '4px' }}
                             />
                           ) : (
@@ -407,7 +312,6 @@ export default function UsersPage() {
                 </table>
               </div>
 
-              {/* 分页 */}
               <div
                 style={{
                   padding: '16px',
@@ -423,7 +327,7 @@ export default function UsersPage() {
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button
-                    onClick={() => setPage(Math.max(1, page - 1))}
+                    onClick={() => handlePagination(Math.max(1, page - 1))}
                     disabled={page === 1}
                     style={{
                       padding: '8px 16px',
@@ -437,7 +341,7 @@ export default function UsersPage() {
                     上一页
                   </button>
                   <button
-                    onClick={() => setPage(Math.min(pages, page + 1))}
+                    onClick={() => handlePagination(Math.min(pages, page + 1))}
                     disabled={page === pages}
                     style={{
                       padding: '8px 16px',
@@ -457,7 +361,6 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* 列印样式 */}
       <style>{`
         @media print {
           body {

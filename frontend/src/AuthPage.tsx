@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { register, login } from './api/auth'
+import { useAuth } from './hooks/useAuth'
 
 type AuthPageProps = {
   onAuth: (token: string) => void
@@ -7,31 +7,33 @@ type AuthPageProps = {
 
 export default function AuthPage({ onAuth }: AuthPageProps) {
   const [isRegister, setIsRegister] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
+  const [password, setPassword] = useState('')
   
-  const [formData, setFormData] = useState({
-    email: '',
-    name: '',
-    password: '',
-  })
+  const { loading, error, setError, handleRegister, handleLogin } = useAuth()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    setLoading(true)
 
     try {
       const res = isRegister
-        ? await register(formData.email, formData.name, formData.password)
-        : await login(formData.email, formData.password)
+        ? await handleRegister(email, name, password)
+        : await handleLogin(email, password)
       
-      onAuth(res.data.token)
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Authentication failed')
-    } finally {
-      setLoading(false)
+      onAuth(res.token)
+    } catch (err) {
+      // Error is already set by the hook
     }
+  }
+
+  const handleToggleMode = () => {
+    setIsRegister(!isRegister)
+    setError('')
+    setEmail('')
+    setName('')
+    setPassword('')
   }
 
   return (
@@ -67,8 +69,8 @@ export default function AuthPage({ onAuth }: AuthPageProps) {
               </label>
               <input
                 type="text"
-                value={formData.name}
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
+                value={name}
+                onChange={e => setName(e.target.value)}
                 style={{ width: '100%', padding: '12px', fontSize: '14px' }}
                 placeholder="輸入你的名字"
                 required
@@ -82,8 +84,8 @@ export default function AuthPage({ onAuth }: AuthPageProps) {
             </label>
             <input
               type="email"
-              value={formData.email}
-              onChange={e => setFormData({ ...formData, email: e.target.value })}
+              value={email}
+              onChange={e => setEmail(e.target.value)}
               style={{ width: '100%', fontSize: '14px' }}
               placeholder="your@email.com"
               required
@@ -96,8 +98,8 @@ export default function AuthPage({ onAuth }: AuthPageProps) {
             </label>
             <input
               type="password"
-              value={formData.password}
-              onChange={e => setFormData({ ...formData, password: e.target.value })}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
               style={{ width: '100%', fontSize: '14px' }}
               placeholder="至少 6 位字元"
               required
@@ -138,11 +140,7 @@ export default function AuthPage({ onAuth }: AuthPageProps) {
 
         <button
           type="button"
-          onClick={() => {
-            setIsRegister(!isRegister)
-            setError('')
-            setFormData({ email: '', name: '', password: '' })
-          }}
+          onClick={handleToggleMode}
           style={{
             width: '100%',
             padding: '12px',
