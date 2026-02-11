@@ -157,13 +157,13 @@ export default function AuthForm({
             transition: 'all 0.3s ease',
             marginBottom: 16,
           }}
-          onMouseOver={(e) => {
+          onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
             if (!loading) {
               e.currentTarget.style.transform = 'translateY(-2px)'
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)'
             }
           }}
-          onMouseOut={(e) => {
+          onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
             e.currentTarget.style.transform = 'translateY(0)'
             e.currentTarget.style.boxShadow = 'none'
           }}

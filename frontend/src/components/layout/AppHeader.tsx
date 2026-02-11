@@ -77,10 +77,10 @@ export default function AppHeader({
           cursor: 'pointer',
           transition: 'all 0.2s ease',
         }}
-        onMouseOver={(e) => {
+        onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
           e.currentTarget.style.background = '#efefef'
         }}
-        onMouseOut={(e) => {
+        onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
           e.currentTarget.style.background = '#f5f5f5'
         }}
       >

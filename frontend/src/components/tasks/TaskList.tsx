@@ -75,11 +75,11 @@ export default function TaskList({
               cursor: 'pointer',
               transition: 'all 0.2s ease',
             }}
-            onMouseOver={(e) => {
+            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.transform = 'translateY(-2px)'
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)'
             }}
-            onMouseOut={(e) => {
+            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.transform = 'translateY(0)'
               e.currentTarget.style.boxShadow = 'none'
             }}
@@ -202,8 +202,8 @@ export default function TaskList({
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                       }}
-                      onMouseOver={(e) => (e.currentTarget.style.background = '#0b7dda')}
-                      onMouseOut={(e) => (e.currentTarget.style.background = '#2196F3')}
+                      onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = '#0b7dda')}
+                      onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = '#2196F3')}
                     >
                       編輯
                     </button>
@@ -219,8 +219,8 @@ export default function TaskList({
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                       }}
-                      onMouseOver={(e) => (e.currentTarget.style.background = '#da190b')}
-                      onMouseOut={(e) => (e.currentTarget.style.background = '#f44336')}
+                      onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = '#da190b')}
+                      onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = '#f44336')}
                     >
                       刪除
                     </button>
