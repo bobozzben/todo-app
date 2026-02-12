@@ -23,6 +23,7 @@ interface UserTableProps {
   onSearchChange: (value: string) => void
   onPrint: () => void
   onExportExcel: () => void
+  onExportWord: () => void
   onExportPDF: () => void
   onImport: (e: React.ChangeEvent<HTMLInputElement>) => void
   onUpdate: (id: number) => void
@@ -46,6 +47,7 @@ export default function UserTable({
   onSearchChange,
   onPrint,
   onExportExcel,
+  onExportWord,
   onExportPDF,
   onImport,
   onUpdate,
@@ -124,6 +126,21 @@ export default function UserTable({
               }}
             >
               📊 导出 Excel
+            </button>
+
+            <button
+              onClick={onExportWord}
+              style={{
+                padding: '12px 20px',
+                background: '#0066cc',
+                color: 'white',
+                fontWeight: 600,
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+              }}
+            >
+              📘 导出 Word
             </button>
 
             <button

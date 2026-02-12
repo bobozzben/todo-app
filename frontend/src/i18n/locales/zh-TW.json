@@ -1,0 +1,83 @@
+{
+  "app": {
+    "title": "任務管理系統"
+  },
+  "nav": {
+    "tasks": "任務管理",
+    "users": "用戶管理",
+    "logout": "登出"
+  },
+  "auth": {
+    "title": "登入/註冊",
+    "login": "登入",
+    "register": "註冊",
+    "email": "信箱",
+    "password": "密碼",
+    "name": "姓名",
+    "toggleRegister": "切換到註冊",
+    "toggleLogin": "切換到登入",
+    "loginSuccess": "登入成功",
+    "registerSuccess": "註冊成功",
+    "enterEmail": "請輸入信箱",
+    "enterPassword": "請輸入密碼",
+    "enterName": "請輸入姓名"
+  },
+  "tasks": {
+    "title": "任務管理",
+    "totalTasks": "共 {{count}} 項任務",
+    "newTask": "新建任務",
+    "taskName": "任務名稱",
+    "placeholder": "輸入任務名稱...",
+    "add": "新增",
+    "edit": "編輯",
+    "save": "保存",
+    "delete": "刪除",
+    "cancel": "取消",
+    "completed": "已完成",
+    "pending": "待完成",
+    "deleteConfirm": "確認刪除此任務？"
+  },
+  "users": {
+    "title": "用戶管理",
+    "totalUsers": "共 {{count}} 個用戶",
+    "search": "搜尋用戶（姓名、信箱、公司等）...",
+    "print": "📄 列印",
+    "exportExcel": "📊 匯出 Excel",
+    "exportWord": "📖 匯出 Word",
+    "exportPDF": "📕 匯出 PDF",
+    "importExcel": "📤 匯入 Excel",
+    "gridView": "表格檢視",
+    "detailView": "詳細編輯",
+    "id": "ID",
+    "email": "信箱",
+    "name": "姓名",
+    "phone": "電話",
+    "address": "地址",
+    "company": "公司",
+    "position": "職位",
+    "notes": "備註",
+    "action": "操作",
+    "click": "點擊行進行編修",
+    "edit": "編輯",
+    "delete": "刪除",
+    "save": "保存",
+    "cancel": "取消",
+    "confirmDelete": "確認刪除此用戶？",
+    "deleteConfirm": "確認刪除此用戶？",
+    "loading": "載入中...",
+    "noData": "暫無資料",
+    "page": "第 {{current}} 頁，共 {{total}} 頁",
+    "previous": "上一頁",
+    "next": "下一頁"
+  },
+  "common": {
+    "loading": "載入中...",
+    "error": "錯誤",
+    "success": "成功",
+    "warning": "警告",
+    "confirm": "確認",
+    "cancel": "取消",
+    "yes": "是",
+    "no": "否"
+  }
+}

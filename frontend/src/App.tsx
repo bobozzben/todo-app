@@ -1,18 +1,25 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import AuthPage from './AuthPage'
 import UsersPage from './UsersPage'
 import TasksPage from './TasksPage'
 import AppHeader from './components/layout/AppHeader'
 import { useAuth } from './hooks/useAuth'
 import { setAuthToken } from './api/auth'
+import { useTranslation } from 'react-i18next'
 
-export default function App() {
+function AppContent() {
   const [currentPage, setCurrentPage] = useState<'tasks' | 'users'>('tasks')
   const { authenticated, user, handleLogout, initAuth } = useAuth()
+  const { ready } = useTranslation()
 
   useEffect(() => {
     initAuth()
   }, [])
+
+  // Wait for i18n to be ready
+  if (!ready) {
+    return <div>Loading...</div>
+  }
 
   if (!authenticated) {
     return (
@@ -55,6 +62,14 @@ export default function App() {
         <TasksPage />
       </div>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AppContent />
+    </Suspense>
   )
 }
 

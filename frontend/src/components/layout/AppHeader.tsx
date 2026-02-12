@@ -1,3 +1,6 @@
+import { useTranslation } from 'react-i18next'
+import LanguageSwitcher from './LanguageSwitcher'
+
 interface AppHeaderProps {
   currentPage: 'tasks' | 'users'
   userName: string | undefined
@@ -11,6 +14,8 @@ export default function AppHeader({
   onPageChange,
   onLogout,
 }: AppHeaderProps) {
+  const { t } = useTranslation()
+
   return (
     <div
       style={{
@@ -37,7 +42,7 @@ export default function AppHeader({
               cursor: 'pointer',
             }}
           >
-            📋 待辦事項
+            📋 {t('nav.tasks')}
           </button>
           <button
             onClick={() => onPageChange('users')}
@@ -50,7 +55,7 @@ export default function AppHeader({
               cursor: 'pointer',
             }}
           >
-            👥 用戶管理
+            👥 {t('nav.users')}
           </button>
         </div>
         <h1
@@ -61,31 +66,37 @@ export default function AppHeader({
             margin: '0 0 4px 0',
           }}
         >
-          {currentPage === 'tasks' ? '待辦事項' : '用戶管理'}
+          {currentPage === 'tasks' ? t('tasks.title') : t('users.title')}
         </h1>
-        <p style={{ margin: 0, color: '#999', fontSize: '14px' }}>歡迎，{userName}</p>
+        <p style={{ margin: 0, color: '#999', fontSize: '14px' }}>
+          Welcome, {userName}
+        </p>
       </div>
-      <button
-        onClick={onLogout}
-        style={{
-          padding: '10px 20px',
-          background: '#f5f5f5',
-          border: '1px solid #e0e0e0',
-          borderRadius: '8px',
-          color: '#666',
-          fontWeight: 500,
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-        }}
-        onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
-          e.currentTarget.style.background = '#efefef'
-        }}
-        onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
-          e.currentTarget.style.background = '#f5f5f5'
-        }}
-      >
-        登出
-      </button>
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+        <LanguageSwitcher />
+        <button
+          onClick={onLogout}
+          style={{
+            padding: '10px 20px',
+            background: '#f5f5f5',
+            border: '1px solid #e0e0e0',
+            borderRadius: '8px',
+            color: '#666',
+            fontWeight: 500,
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
+            e.currentTarget.style.background = '#efefef'
+          }}
+          onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
+            e.currentTarget.style.background = '#f5f5f5'
+          }}
+        >
+          {t('nav.logout')}
+        </button>
+      </div>
     </div>
   )
 }
+

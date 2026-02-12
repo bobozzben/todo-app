@@ -1,0 +1,83 @@
+{
+  "app": {
+    "title": "Task Management System"
+  },
+  "nav": {
+    "tasks": "Tasks",
+    "users": "Users",
+    "logout": "Logout"
+  },
+  "auth": {
+    "title": "Login / Register",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "toggleRegister": "Switch to Register",
+    "toggleLogin": "Switch to Login",
+    "loginSuccess": "Login Successful",
+    "registerSuccess": "Registration Successful",
+    "enterEmail": "Please enter email",
+    "enterPassword": "Please enter password",
+    "enterName": "Please enter name"
+  },
+  "tasks": {
+    "title": "Task Management",
+    "totalTasks": "Total {{count}} tasks",
+    "newTask": "New Task",
+    "taskName": "Task Name",
+    "placeholder": "Enter task name...",
+    "add": "Add",
+    "edit": "Edit",
+    "save": "Save",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "completed": "Completed",
+    "pending": "Pending",
+    "deleteConfirm": "Confirm delete this task?"
+  },
+  "users": {
+    "title": "User Management",
+    "totalUsers": "Total {{count}} users",
+    "search": "Search users (name, email, company, etc)...",
+    "print": "📄 Print",
+    "exportExcel": "📊 Export Excel",
+    "exportWord": "📖 Export Word",
+    "exportPDF": "📕 Export PDF",
+    "importExcel": "📤 Import Excel",
+    "gridView": "Grid View",
+    "detailView": "Detail Edit",
+    "id": "ID",
+    "email": "Email",
+    "name": "Name",
+    "phone": "Phone",
+    "address": "Address",
+    "company": "Company",
+    "position": "Position",
+    "notes": "Notes",
+    "action": "Action",
+    "click": "Click row to edit",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirmDelete": "Confirm delete this user?",
+    "deleteConfirm": "Confirm delete this user?",
+    "loading": "Loading...",
+    "noData": "No data",
+    "page": "Page {{current}} of {{total}}",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No"
+  }
+}

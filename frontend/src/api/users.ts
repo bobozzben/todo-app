@@ -17,6 +17,11 @@ export const updateUser = (id: number, data: any) => {
   return axios.put(`/users/${id}`, data)
 }
 
+// 创建用户
+export const createUser = (data: any) => {
+  return axios.post('/users', data)
+}
+
 // 删除用户
 export const deleteUser = (id: number) => {
   return axios.delete(`/users/${id}`)
@@ -36,6 +41,14 @@ export const importUsers = (file: File) => {
 // 导出 Excel
 export const exportUsersExcel = (search: string = '') => {
   return axios.get('/users/export/excel', {
+    params: { search },
+    responseType: 'blob',
+  })
+}
+
+// 导出 Word
+export const exportUsersWord = (search: string = '') => {
+  return axios.get('/users/export/word', {
     params: { search },
     responseType: 'blob',
   })

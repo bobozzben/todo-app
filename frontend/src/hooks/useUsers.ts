@@ -1,34 +1,27 @@
 import { useState, useEffect } from 'react'
 import {
   fetchUsers,
+  createUser,
   updateUser,
   deleteUser,
   importUsers,
   exportUsersExcel,
+  exportUsersWord,
   exportUsersPDF,
 } from '../api/users'
+import { User } from '../types'
 
-type User = {
-  id: number
-  email: string
-  name: string
-  phone?: string
-  address?: string
-  company?: string
-  position?: string
-  notes?: string
-  createdAt: string
-}
+type UserType = User
 
 export function useUsers() {
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<UserType[]>([])
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [limit, setLimit] = useState(10)
   const [editingId, setEditingId] = useState<number | null>(null)
-  const [editData, setEditData] = useState<Partial<User>>({})
+  const [editData, setEditData] = useState<Partial<UserType>>({})
 
   useEffect(() => {
     loadUsers()
@@ -50,26 +43,46 @@ export function useUsers() {
     }
   }
 
-  async function handleUpdate(id: number) {
+  async function handleUpdate(id: number, silent: boolean = false) {
     try {
       await updateUser(id, editData)
       setEditingId(null)
       setEditData({})
       await loadUsers()
-      alert('Updated successfully')
+      if (!silent) {
+        alert('Updated successfully')
+      }
     } catch (err: any) {
       alert('Update failed: ' + err.response?.data?.error)
     }
   }
 
-  async function handleDelete(id: number) {
+  async function handleDelete(id: number, silent: boolean = false) {
     if (!confirm('Confirm delete?')) return
     try {
       await deleteUser(id)
       await loadUsers()
-      alert('Deleted successfully')
+      if (!silent) {
+        alert('Deleted successfully')
+      }
     } catch (err: any) {
       alert('Delete failed: ' + err.response?.data?.error)
+    }
+  }
+
+  async function handleCreate(data: Partial<UserType>) {
+    if (!data.email || !data.name) {
+      alert('Email and name are required')
+      return
+    }
+    try {
+      await createUser(data)
+      setEditingId(null)
+      setEditData({})
+      await loadUsers()
+      alert('Created successfully')
+    } catch (err: any) {
+      alert('Create failed: ' + err.response?.data?.error)
     }
   }
 
@@ -97,6 +110,23 @@ export function useUsers() {
       link.parentElement?.removeChild(link)
     } catch (err) {
       alert('Export Excel failed')
+    }
+  }
+
+  async function handleExportWord() {
+    try {
+      const res = await exportUsersWord(search)
+      const url = window.URL.createObjectURL(new Blob([res.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'users_export.docx')
+      document.body.appendChild(link)
+      link.click()
+      link.parentElement?.removeChild(link)
+    } catch (err: any) {
+      console.error('Word export error:', err)
+      const errMsg = err.response?.data?.error || err.message || 'Export Word failed'
+      alert(`Export Word failed: ${errMsg}`)
     }
   }
 
@@ -147,10 +177,12 @@ export function useUsers() {
     setEditingId,
     setEditData,
     loadUsers,
+    handleCreate,
     handleUpdate,
     handleDelete,
     handleImport,
     handleExportExcel,
+    handleExportWord,
     handleExportPDF,
     handlePrint,
   }

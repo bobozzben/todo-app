@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 interface AuthFormProps {
   isRegister: boolean
   email: string
@@ -25,6 +27,8 @@ export default function AuthForm({
   onToggleMode,
   onSubmit,
 }: AuthFormProps) {
+  const { t } = useTranslation()
+
   return (
     <div
       style={{
@@ -55,7 +59,7 @@ export default function AuthForm({
             color: '#333',
           }}
         >
-          {isRegister ? '创建账户' : '登录'}
+          {isRegister ? t('auth.register') : t('auth.login')}
         </h1>
 
         {error && (
@@ -75,7 +79,7 @@ export default function AuthForm({
 
         <div style={{ marginBottom: 16 }}>
           <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#666' }}>
-            邮箱
+            {t('auth.email')}
           </label>
           <input
             type="email"
@@ -98,7 +102,7 @@ export default function AuthForm({
         {isRegister && (
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#666' }}>
-              姓名
+              {t('auth.name')}
             </label>
             <input
               type="text"
@@ -121,7 +125,7 @@ export default function AuthForm({
 
         <div style={{ marginBottom: 24 }}>
           <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#666' }}>
-            密码
+            {t('auth.password')}
           </label>
           <input
             type="password"
@@ -168,7 +172,7 @@ export default function AuthForm({
             e.currentTarget.style.boxShadow = 'none'
           }}
         >
-          {loading ? '处理中...' : isRegister ? '注册' : '登录'}
+          {loading ? t('common.loading') : isRegister ? t('auth.register') : t('auth.login')}
         </button>
 
         <div style={{ textAlign: 'center' }}>
@@ -185,7 +189,7 @@ export default function AuthForm({
               textDecoration: 'underline',
             }}
           >
-            {isRegister ? '已有账户？登录' : '没有账户？注册'}
+            {isRegister ? t('auth.toggleLogin') : t('auth.toggleRegister')}
           </button>
         </div>
       </div>

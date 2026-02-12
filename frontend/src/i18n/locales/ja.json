@@ -1,0 +1,83 @@
+{
+  "app": {
+    "title": "タスク管理システム"
+  },
+  "nav": {
+    "tasks": "タスク",
+    "users": "ユーザー",
+    "logout": "ログアウト"
+  },
+  "auth": {
+    "title": "ログイン / 登録",
+    "login": "ログイン",
+    "register": "登録",
+    "email": "メール",
+    "password": "パスワード",
+    "name": "名前",
+    "toggleRegister": "登録に切り替え",
+    "toggleLogin": "ログインに切り替え",
+    "loginSuccess": "ログイン成功",
+    "registerSuccess": "登録成功",
+    "enterEmail": "メールを入力してください",
+    "enterPassword": "パスワードを入力してください",
+    "enterName": "名前を入力してください"
+  },
+  "tasks": {
+    "title": "タスク管理",
+    "totalTasks": "合計 {{count}} 件のタスク",
+    "newTask": "新しいタスク",
+    "taskName": "タスク名",
+    "placeholder": "タスク名を入力...",
+    "add": "追加",
+    "edit": "編集",
+    "save": "保存",
+    "delete": "削除",
+    "cancel": "キャンセル",
+    "completed": "完了",
+    "pending": "保留中",
+    "deleteConfirm": "このタスクを削除してもよろしいですか？"
+  },
+  "users": {
+    "title": "ユーザー管理",
+    "totalUsers": "合計 {{count}} 人のユーザー",
+    "search": "ユーザーを検索（名前、メール、会社など）...",
+    "print": "📄 印刷",
+    "exportExcel": "📊 Excelをエクスポート",
+    "exportWord": "📖 Wordをエクスポート",
+    "exportPDF": "📕 PDFをエクスポート",
+    "importExcel": "📤 Excelをインポート",
+    "gridView": "グリッドビュー",
+    "detailView": "詳細編集",
+    "id": "ID",
+    "email": "メール",
+    "name": "名前",
+    "phone": "電話",
+    "address": "住所",
+    "company": "会社",
+    "position": "職位",
+    "notes": "備考",
+    "action": "操作",
+    "click": "行をクリックして編集",
+    "edit": "編集",
+    "delete": "削除",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "confirmDelete": "このユーザーを削除してもよろしいですか？",
+    "deleteConfirm": "このユーザーを削除してもよろしいですか？",
+    "loading": "読込中...",
+    "noData": "データなし",
+    "page": "ページ {{current}} / {{total}}",
+    "previous": "前へ",
+    "next": "次へ"
+  },
+  "common": {
+    "loading": "読込中...",
+    "error": "エラー",
+    "success": "成功",
+    "warning": "警告",
+    "confirm": "確認",
+    "cancel": "キャンセル",
+    "yes": "はい",
+    "no": "いいえ"
+  }
+}

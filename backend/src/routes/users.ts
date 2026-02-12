@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import { updateUserProfileSchema } from '../validators/taskValidator'
 import * as XLSX from 'xlsx'
 import { PDFDocument, rgb, PDFPage } from 'pdf-lib'
+import { Document, Packer, Table, TableCell, TableRow, Paragraph, BorderStyle, VerticalAlign, AlignmentType } from 'docx'
 import fs from 'fs'
 import path from 'path'
 
@@ -226,7 +227,7 @@ router.post('/import', upload.single('file'), async (req: Request, res: Response
   }
 })
 
-// 导出用户到 Excel
+// Export users to Excel
 router.get('/export/excel', async (req: Request, res: Response) => {
   try {
     const { search } = req.query
@@ -264,7 +265,94 @@ router.get('/export/excel', async (req: Request, res: Response) => {
   }
 })
 
-// 导出用户到 PDF
+// Export users to Word
+router.get('/export/word', async (req: Request, res: Response) => {
+  try {
+    const { search } = req.query
+
+    const where = buildSearchWhere(String(search))
+
+    const users = await prisma.user.findMany({
+      where,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        address: true,
+        company: true,
+        position: true,
+        notes: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    // Create table rows
+    const tableRows = [
+      new TableRow({
+        children: [
+          new TableCell({ children: [new Paragraph('ID')] }),
+          new TableCell({ children: [new Paragraph('Email')] }),
+          new TableCell({ children: [new Paragraph('Name')] }),
+          new TableCell({ children: [new Paragraph('Phone')] }),
+          new TableCell({ children: [new Paragraph('Company')] }),
+          new TableCell({ children: [new Paragraph('Position')] }),
+        ],
+      }),
+    ]
+
+    // Add user data rows
+    for (const user of users) {
+      tableRows.push(
+        new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph(String(user.id))] }),
+            new TableCell({ children: [new Paragraph(user.email)] }),
+            new TableCell({ children: [new Paragraph(user.name || '')] }),
+            new TableCell({ children: [new Paragraph(user.phone || '')] }),
+            new TableCell({ children: [new Paragraph(user.company || '')] }),
+            new TableCell({ children: [new Paragraph(user.position || '')] }),
+          ],
+        })
+      )
+    }
+
+    const doc = new Document({
+      sections: [
+        {
+          children: [
+            new Paragraph({
+              text: 'User List Report',
+              size: 32,
+              bold: true,
+              spacing: { after: 200 },
+            }),
+            new Paragraph({
+              text: `Generated: ${new Date().toLocaleDateString('en-US')}`,
+              size: 20,
+              spacing: { after: 400 },
+            }),
+            new Table({
+              width: { size: 100, type: 'pct' },
+              rows: tableRows,
+            }),
+          ],
+        },
+      ],
+    })
+
+    const buffer = await Packer.toBuffer(doc)
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    res.setHeader('Content-Disposition', 'attachment; filename=users_export.docx')
+    res.send(buffer)
+  } catch (err: any) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// Export users to PDF
 router.get('/export/pdf', async (req: Request, res: Response) => {
   try {
     const { search } = req.query
