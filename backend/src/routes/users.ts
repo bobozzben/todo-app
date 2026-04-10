@@ -324,13 +324,10 @@ router.get('/export/word', async (req: Request, res: Response) => {
           children: [
             new Paragraph({
               text: 'User List Report',
-              size: 32,
-              bold: true,
               spacing: { after: 200 },
             }),
             new Paragraph({
               text: `Generated: ${new Date().toLocaleDateString('en-US')}`,
-              size: 20,
               spacing: { after: 400 },
             }),
             new Table({

@@ -1,11 +1,22 @@
 import { Router } from 'express';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import prisma from '../prismaClient';
 import { registerSchema, loginSchema, updateUserSchema } from '../validators/taskValidator';
 import { generateToken } from '../auth/jwt';
 import { authMiddleware } from '../middleware/auth';
 
 const router = Router();
+
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const BACKEND_URL = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 4000}`;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_REDIRECT_URI = `${BACKEND_URL}/api/auth/google/callback`;
+
+if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+  console.warn('Google OAuth not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.');
+}
 
 // Register
 router.post('/register', async (req, res, next) => {
@@ -34,6 +45,82 @@ router.post('/register', async (req, res, next) => {
     const token = generateToken(user.id, user.email);
 
     res.status(201).json({ token, user: { id: user.id, email: user.email, name: user.name } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// OAuth: Google Login Start
+router.get('/google', (req, res) => {
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+    return res.status(500).json({ error: 'Google OAuth not configured' });
+  }
+
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: GOOGLE_REDIRECT_URI,
+    response_type: 'code',
+    scope: 'openid email profile',
+    access_type: 'offline',
+    prompt: 'consent',
+  });
+
+  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
+});
+
+// OAuth: Google Login Callback
+router.get('/google/callback', async (req, res, next) => {
+  try {
+    const code = String(req.query.code || '');
+    if (!code) {
+      return res.status(400).json({ error: 'Missing authorization code' });
+    }
+
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        code,
+        client_id: GOOGLE_CLIENT_ID!,
+        client_secret: GOOGLE_CLIENT_SECRET!,
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        grant_type: 'authorization_code',
+      }),
+    });
+
+    const tokenData = await tokenResponse.json();
+    if (!tokenResponse.ok) {
+      return res.status(500).json({ error: 'Failed to fetch Google tokens', details: tokenData });
+    }
+
+    const profileResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: {
+        Authorization: `Bearer ${tokenData.access_token}`,
+      },
+    });
+
+    const profile = await profileResponse.json();
+    if (!profile.email) {
+      return res.status(500).json({ error: 'Google profile did not return email' });
+    }
+
+    let user = await prisma.user.findUnique({ where: { email: profile.email } });
+    if (!user) {
+      const randomPassword = crypto.randomBytes(32).toString('hex');
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+      user = await prisma.user.create({
+        data: {
+          email: profile.email,
+          name: profile.name || profile.email.split('@')[0],
+          password: hashedPassword,
+        },
+      });
+    }
+
+    const token = generateToken(user.id, user.email);
+    res.redirect(`${FRONTEND_URL}/?token=${encodeURIComponent(token)}`);
   } catch (err) {
     next(err);
   }

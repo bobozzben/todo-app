@@ -175,6 +175,27 @@ export default function AuthForm({
           {loading ? t('common.loading') : isRegister ? t('auth.register') : t('auth.login')}
         </button>
 
+        <button
+          onClick={() => {
+            window.location.href = '/api/auth/google'
+          }}
+          style={{
+            width: '100%',
+            padding: '12px',
+            fontSize: '16px',
+            fontWeight: 600,
+            background: '#db4437',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            marginBottom: 16,
+          }}
+        >
+          Continue with Google
+        </button>
+
         <div style={{ textAlign: 'center' }}>
           <button
             onClick={onToggleMode}

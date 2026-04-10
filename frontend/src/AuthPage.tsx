@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AuthForm from './components/auth/AuthForm'
 import { useAuth } from './hooks/useAuth'
 
@@ -13,6 +13,15 @@ export default function AuthPage({ onAuth }: AuthPageProps) {
   const [password, setPassword] = useState('')
   
   const { loading, error, setError, handleRegister, handleLogin } = useAuth()
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const token = urlParams.get('token')
+    if (token) {
+      window.history.replaceState({}, document.title, window.location.pathname)
+      onAuth(token)
+    }
+  }, [onAuth])
 
   async function handleSubmit() {
     setError('')

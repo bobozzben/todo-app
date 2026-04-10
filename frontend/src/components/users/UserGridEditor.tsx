@@ -48,74 +48,71 @@ export default function UserGridEditor({
 }: UserGridEditorProps) {
   const { t } = useTranslation()
   const totalPages = Math.ceil(total / limit)
-  const [editingCell, setEditingCell] = useState<{ userId: number; field: string } | null>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [focusedField, setFocusedField] = useState<string | null>(null)
+  const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
 
   const EDITABLE_FIELDS = ['name', 'phone', 'company', 'position'] as const
 
   useEffect(() => {
-    if (editingCell && inputRef.current) {
-      inputRef.current.focus()
-      inputRef.current.select()
+    if (editingId && focusedField) {
+      const key = `${editingId}_${focusedField}`
+      const input = inputRefs.current[key]
+      if (input) {
+        input.focus()
+        input.select()
+      }
     }
-  }, [editingCell])
+  }, [editingId, focusedField])
 
-  const handleCellClick = (user: User, field: string) => {
-    if (field === 'email') return
+  // 当开始编辑一行时，自动聚焦第一个字段
+  useEffect(() => {
+    if (editingId && !focusedField) {
+      setFocusedField(EDITABLE_FIELDS[0])
+    }
+  }, [editingId])
+
+  const handleRowClick = (user: User) => {
     if (editingId !== user.id) {
       onEditStart(user)
+      setFocusedField(EDITABLE_FIELDS[0])
     }
-    setEditingCell({ userId: user.id, field })
   }
 
-  const handleCellKeyDown = (e: React.KeyboardEvent, userId: number, field: string) => {
+  const handleFieldKeyDown = (e: React.KeyboardEvent, userId: number, field: string) => {
     const fieldIndex = EDITABLE_FIELDS.indexOf(field as typeof EDITABLE_FIELDS[number])
 
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      // 移动到下一个字段
-      if (fieldIndex < EDITABLE_FIELDS.length - 1) {
-        const nextField = EDITABLE_FIELDS[fieldIndex + 1]
-        setEditingCell({ userId, field: nextField })
-      } else {
-        // 最后一个字段，保存行
-        onEditSave(userId)
-        setEditingCell(null)
-      }
-    } else if (e.key === 'Tab') {
+    if (e.key === 'Tab') {
       e.preventDefault()
       if (e.shiftKey) {
         // Shift+Tab: 上一个字段
         if (fieldIndex > 0) {
-          const prevField = EDITABLE_FIELDS[fieldIndex - 1]
-          setEditingCell({ userId, field: prevField })
+          setFocusedField(EDITABLE_FIELDS[fieldIndex - 1])
         }
       } else {
         // Tab: 下一个字段
         if (fieldIndex < EDITABLE_FIELDS.length - 1) {
-          const nextField = EDITABLE_FIELDS[fieldIndex + 1]
-          setEditingCell({ userId, field: nextField })
-        } else {
-          // 最后一个字段，保存
-          onEditSave(userId)
-          setEditingCell(null)
+          setFocusedField(EDITABLE_FIELDS[fieldIndex + 1])
         }
       }
+    } else if (e.key === 'Enter') {
+      e.preventDefault()
+      onEditSave(userId)
+      setFocusedField(null)
     } else if (e.key === 'Escape') {
       e.preventDefault()
       onEditCancel()
-      setEditingCell(null)
+      setFocusedField(null)
     }
   }
 
   const handleSaveClick = (userId: number) => {
     onEditSave(userId)
-    setEditingCell(null)
+    setFocusedField(null)
   }
 
   const handleCancelClick = () => {
     onEditCancel()
-    setEditingCell(null)
+    setFocusedField(null)
   }
 
   return (
@@ -146,7 +143,7 @@ export default function UserGridEditor({
         fontSize: '13px',
         color: '#1565c0'
       }}>
-        💡 {t('users.click')} | Tab / Shift+Tab {t('users.next')} | Enter {t('users.save')} | Esc {t('users.cancel')}
+        💡 {t('users.click')} | Tab {t('users.next')} | Shift+Tab {t('users.previous')} | Enter {t('users.save')} | Esc {t('users.cancel')}
       </div>
 
       <div style={{ overflowX: 'auto', background: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -169,10 +166,22 @@ export default function UserGridEditor({
               return (
                 <tr
                   key={user.id}
+                  onClick={() => handleRowClick(user)}
                   style={{
                     borderBottom: '1px solid #e0e0e0',
                     background: isRowEditing ? '#f0f8ff' : 'white',
+                    cursor: isRowEditing ? 'default' : 'pointer',
                     transition: 'background-color 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isRowEditing) {
+                      e.currentTarget.style.background = '#f5f5f5'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isRowEditing) {
+                      e.currentTarget.style.background = 'white'
+                    }
                   }}
                 >
                   <td style={{ padding: '12px' }}>{user.id}</td>
@@ -181,7 +190,7 @@ export default function UserGridEditor({
                   </td>
 
                   {(['name', 'phone', 'company', 'position'] as const).map((field) => {
-                    const isCellEditing = isRowEditing && editingCell?.field === field
+                    const isFocused = isRowEditing && focusedField === field
                     const value = (editData[field] as string) || ''
 
                     return (
@@ -189,23 +198,24 @@ export default function UserGridEditor({
                         key={`${user.id}_${field}`}
                         style={{
                           padding: '8px',
-                          cursor: 'text',
-                          background: isCellEditing ? '#fff8dc' : isRowEditing ? '#f0f8ff' : 'white',
-                          borderLeft: isCellEditing ? '3px solid #667eea' : 'none',
+                          background: isFocused ? '#fff8dc' : isRowEditing ? '#f0f8ff' : 'white',
+                          borderLeft: isFocused ? '3px solid #667eea' : 'none',
                         }}
-                        onClick={() => handleCellClick(user, field)}
                       >
-                        {isCellEditing ? (
+                        {isRowEditing ? (
                           <input
-                            ref={inputRef}
+                            ref={(el) => {
+                              if (el) inputRefs.current[`${user.id}_${field}`] = el
+                            }}
                             type="text"
                             value={value}
                             onChange={(e) => onEditChange({ ...editData, [field]: e.target.value })}
-                            onKeyDown={(e) => handleCellKeyDown(e, user.id, field)}
+                            onKeyDown={(e) => handleFieldKeyDown(e, user.id, field)}
+                            onFocus={() => setFocusedField(field)}
                             style={{
                               width: '100%',
                               padding: '6px',
-                              border: '2px solid #667eea',
+                              border: isFocused ? '2px solid #667eea' : '1px solid #ddd',
                               borderRadius: '4px',
                               boxSizing: 'border-box',
                               fontSize: '14px',
@@ -219,7 +229,6 @@ export default function UserGridEditor({
                               padding: '6px',
                               minHeight: '24px',
                               borderRadius: '4px',
-                              cursor: 'pointer',
                               userSelect: 'none',
                             }}
                           >
