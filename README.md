@@ -121,3 +121,5 @@ todo-app/
 **Migration 錯誤？**
 - 重建資料庫：`dropdb -U postgres todo_app && createdb -U postgres todo_app`
 - 重跑 migration：`npx prisma migrate dev --name init`
+
+Test
