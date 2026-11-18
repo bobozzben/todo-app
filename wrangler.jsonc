@@ -1,0 +1,12 @@
+{
+  "name": "todo-app",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "d1_databases": [
+    {
+      "binding": "DB", // 程式碼中呼叫的變數名稱，可自訂
+      "database_name": "my-database",
+      "database_id": "4bbdf8d8-b057-48ac-957c-3428b8b35e14"
+    }
+  ]
+}
